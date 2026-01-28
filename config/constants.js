@@ -32,7 +32,7 @@ export const LOG_LEVELS = {
 };
 
 export const GEMINI_CONFIG = {
-  model: 'gemini-2.0-flash-exp',
+  model: 'gemini-3-flash-preview',
   maxSummaryLength: 100,  // characters
   temperature: 0.7,
   maxRetries: 3,
