@@ -142,13 +142,16 @@ Summary:`;
       const prompt = this._buildPrompt(article, targetLanguage);
 
       logger.debug(`Summarizing article: ${article.title.slice(0, 30)}...`, context);
+      logger.debug(`Detected language: ${detectedLanguage}`, context);
 
       const result = await this.model.generateContent(prompt);
       const response = result.response.text();
 
+      logger.debug(`Gemini raw response: "${response}"`, context);
+
       const parsed = this._parseResponse(response, detectedLanguage);
 
-      logger.debug(`Summary generated for: ${article.title.slice(0, 30)}...`, context);
+      logger.debug(`Parsed - title: "${parsed.translatedTitle}", summary: "${parsed.summary}"`, context);
 
       return parsed;
     } catch (error) {
