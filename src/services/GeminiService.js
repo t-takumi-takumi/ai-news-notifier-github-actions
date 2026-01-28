@@ -150,10 +150,9 @@ Summary:`;
    */
   async summarizeBatch(articles, targetLanguage = 'ja') {
     if (!this.enabled || articles.length === 0) {
-      return articles.map(a => ({ ...a, aiSummary: null, translatedTitle: null }));
+      return articles;
     }
 
-    const results = [];
     const batchSize = GEMINI_CONFIG.batchSize;
 
     logger.info(`Summarizing ${articles.length} articles in batches of ${batchSize}`, 'GeminiService');
@@ -166,18 +165,15 @@ Summary:`;
       logger.info(`Processing batch ${batchNum}/${totalBatches}`, 'GeminiService');
 
       // Process batch in parallel
-      const summaries = await Promise.all(
+      await Promise.all(
         batch.map(async (article) => {
           const { translatedTitle, summary } = await this.summarizeArticle(article, targetLanguage);
-          return {
-            ...article,
-            aiSummary: summary,
-            translatedTitle: translatedTitle
-          };
+          article.setAiSummary(summary);
+          if (translatedTitle) {
+            article.setTranslatedTitle(translatedTitle);
+          }
         })
       );
-
-      results.push(...summaries);
 
       // Small delay between batches to avoid rate limiting
       if (i + batchSize < articles.length) {
@@ -185,8 +181,8 @@ Summary:`;
       }
     }
 
-    logger.info(`Completed summarizing ${results.length} articles`, 'GeminiService');
-    return results;
+    logger.info(`Completed summarizing ${articles.length} articles`, 'GeminiService');
+    return articles;
   }
 
   /**
