@@ -107,14 +107,16 @@ export class Article {
     const displayTitle = this.getDisplayTitle();
     const title = this._truncate(displayTitle, 100);
     lines.push(`1. ${title}`);
+    lines.push('');  // Empty line
 
     // AI Summary (if available)
     if (this.aiSummary) {
-      lines.push(`   💬 ${this.aiSummary}`);
+      lines.push(`💬 ${this.aiSummary}`);
+      lines.push('');  // Empty line
     }
 
     // URL (wrapped in angle brackets to disable embeds)
-    lines.push(`   🔗 <${this.url}>`);
+    lines.push(`🔗 <${this.url}>`);
 
     return lines.join('\n');
   }
