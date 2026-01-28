@@ -21,20 +21,16 @@ jobs:
       - name: Restore seen.json cache
         uses: actions/cache@v4
         with:
-          path: ai-news-notifier-github-actions/data/seen.json
+          path: data/seen.json
           key: ai-news-seen-${{ runner.os }}
           restore-keys: |
             ai-news-seen-
 
       - name: Install dependencies
-        run: |
-          cd ai-news-notifier-github-actions
-          npm ci
+        run: npm ci
 
       - name: Run AI news notifier
-        run: |
-          cd ai-news-notifier-github-actions
-          npm start
+        run: npm start
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -42,5 +38,5 @@ jobs:
       - name: Save seen.json cache
         uses: actions/cache@v4
         with:
-          path: ai-news-notifier-github-actions/data/seen.json
+          path: data/seen.json
           key: ai-news-seen-${{ runner.os }}-${{ hashFiles('**/data/seen.json') }}
