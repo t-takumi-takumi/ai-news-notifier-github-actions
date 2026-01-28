@@ -1,0 +1,34 @@
+{
+  "sources": {
+    "hackernews": {
+      "name": "Hacker News",
+      "emoji": "🔶",
+      "feeds": ["https://hnrss.org/newest"],
+      "maxArticles": 30
+    },
+    "qiita": {
+      "name": "Qiita",
+      "emoji": "🟤",
+      "feeds": [
+        "https://qiita.com/popular-items/feed.atom",
+        "https://qiita.com/tags/ai/feed.atom",
+        "https://qiita.com/tags/llm/feed.atom",
+        "https://qiita.com/tags/chatgpt/feed.atom"
+      ],
+      "maxArticles": 20
+    },
+    "zenn": {
+      "name": "Zenn",
+      "emoji": "🔵",
+      "feeds": [
+        "https://zenn.dev/feed",
+        "https://zenn.dev/topics/ai/feed",
+        "https://zenn.dev/topics/llm/feed",
+        "https://zenn.dev/topics/chatgpt/feed"
+      ],
+      "maxArticles": 20
+    }
+  },
+  "maxArticlesPerSection": 8,
+  "cacheRetentionDays": 30
+}

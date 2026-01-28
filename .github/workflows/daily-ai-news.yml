@@ -1,0 +1,45 @@
+name: Daily AI News Notifier
+
+on:
+  schedule:
+    # Run daily at 07:15 JST (22:15 UTC)
+    - cron: '15 22 * * *'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Restore seen.json cache
+        uses: actions/cache@v4
+        with:
+          path: ai-news-notifier-github-actions/data/seen.json
+          key: ai-news-seen-${{ runner.os }}
+          restore-keys: |
+            ai-news-seen-
+
+      - name: Install dependencies
+        run: |
+          cd ai-news-notifier-github-actions
+          npm ci
+
+      - name: Run AI news notifier
+        run: |
+          cd ai-news-notifier-github-actions
+          npm start
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+      - name: Save seen.json cache
+        uses: actions/cache@v4
+        with:
+          path: ai-news-notifier-github-actions/data/seen.json
+          key: ai-news-seen-${{ runner.os }}-${{ hashFiles('**/data/seen.json') }}

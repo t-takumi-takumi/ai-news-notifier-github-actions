@@ -1,0 +1,29 @@
+{
+  "name": "ai-news-notifier-github-actions",
+  "version": "1.0.0",
+  "description": "Daily AI news notification system for GitHub Actions",
+  "main": "src/index.js",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "dry-run": "node src/index.js --dry-run",
+    "test": "node src/index.js --verbose"
+  },
+  "keywords": [
+    "ai",
+    "news",
+    "rss",
+    "discord",
+    "github-actions"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "axios": "^1.7.9",
+    "rss-parser": "^3.13.0"
+  }
+}
