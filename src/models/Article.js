@@ -103,9 +103,9 @@ export class Article {
   toDiscordFormat() {
     const lines = [];
 
-    // Title (translated or original, truncated to 60 chars)
+    // Title (translated or original, truncated to 100 chars)
     const displayTitle = this.getDisplayTitle();
-    const title = this._truncate(displayTitle, 60);
+    const title = this._truncate(displayTitle, 100);
     lines.push(`1. ${title}`);
 
     // AI Summary (if available)

@@ -22,7 +22,7 @@ export class GeminiService {
         model: GEMINI_CONFIG.model,
         generationConfig: {
           temperature: GEMINI_CONFIG.temperature,
-          maxOutputTokens: 200,
+          maxOutputTokens: 1000,
         }
       });
       this.enabled = true;
@@ -64,22 +64,26 @@ export class GeminiService {
 
     if (isJapanese && targetLanguage === 'ja') {
       // Japanese article, summarize in Japanese
-      return `以下の記事を${maxLength}文字程度で要約してください。重要なポイントを簡潔にまとめてください。
+      return `あなたはニュース記事の要約アシスタントです。以下の記事を${maxLength}文字程度で日本語で要約してください。
 
 タイトル: ${article.title}
-${article.summary ? `内容: ${article.summary}` : ''}
+${article.summary ? `内容概要: ${article.summary}` : ''}
 
-要約（日本語で出力）:`;
+要約（重要なポイントを${maxLength}文字以内で簡潔にまとめてください）:`;
     } else if (!isJapanese && targetLanguage === 'ja') {
       // English article, translate title and summarize in Japanese
-      return `以下の英語の記事を要約してください。タイトルは日本語に翻訳し、内容は${maxLength}文字程度で日本語で要約してください。
+      return `あなたはニュース記事の要約・翻訳アシスタントです。以下の英語記事を処理してください。
+
+タスク:
+1. タイトルを日本語に翻訳
+2. 記事の内容を${maxLength}文字程度で日本語で要約
 
 Title: ${article.title}
 ${article.summary ? `Content: ${article.summary}` : ''}
 
-以下の形式で出力してください（最初の行が翻訳されたタイトル、2行目以降が要約）:
-翻訳されたタイトル
-要約（日本語で出力）`;
+以下の形式で正確に出力してください:
+TITLE: 翻訳されたタイトル
+SUMMARY: 要約文`;
     } else {
       // Default: summarize in original language
       return `Summarize the following article in ${maxLength} characters.
@@ -98,22 +102,30 @@ Summary:`;
     const text = response.trim();
 
     if (originalLanguage === 'en') {
-      // English article: look for title and summary in response
+      // Try to parse TITLE: and SUMMARY: format first
+      const titleMatch = text.match(/TITLE:\s*(.+?)(?:\n|$)/i);
+      const summaryMatch = text.match(/SUMMARY:\s*(.+?)(?:\n*$|$)/is);
+
+      if (titleMatch && summaryMatch) {
+        return {
+          translatedTitle: titleMatch[1].trim(),
+          summary: summaryMatch[1].trim()
+        };
+      }
+
+      // Fallback: split by lines
       const lines = text.split('\n').map(l => l.trim()).filter(l => l);
       if (lines.length >= 2) {
-        // First line is translated title, rest is summary
         return {
           translatedTitle: lines[0],
           summary: lines.slice(1).join('\n')
         };
       } else if (lines.length === 1) {
-        // Only summary returned, use original title as is
         return {
           translatedTitle: null,
           summary: lines[0]
         };
       }
-      // Empty response
       return {
         translatedTitle: null,
         summary: null
