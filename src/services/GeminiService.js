@@ -69,7 +69,7 @@ export class GeminiService {
 タイトル: ${article.title}
 ${article.summary ? `内容: ${article.summary}` : ''}
 
-要約:`;
+要約（日本語で出力）:`;
     } else if (!isJapanese && targetLanguage === 'ja') {
       // English article, translate title and summarize in Japanese
       return `以下の英語の記事を要約してください。タイトルは日本語に翻訳し、内容は${maxLength}文字程度で日本語で要約してください。
@@ -77,9 +77,9 @@ ${article.summary ? `内容: ${article.summary}` : ''}
 Title: ${article.title}
 ${article.summary ? `Content: ${article.summary}` : ''}
 
-Output format:
+以下の形式で出力してください（最初の行が翻訳されたタイトル、2行目以降が要約）:
 翻訳されたタイトル
-要約:`;
+要約（日本語で出力）`;
     } else {
       // Default: summarize in original language
       return `Summarize the following article in ${maxLength} characters.
@@ -97,21 +97,33 @@ Summary:`;
   _parseResponse(response, originalLanguage) {
     const text = response.trim();
 
-    // Check if response contains both title and summary (for translated articles)
-    const lines = text.split('\n').map(l => l.trim()).filter(l => l);
-
-    if (originalLanguage === 'en' && lines.length >= 2) {
-      // First line is likely translated title, rest is summary
+    if (originalLanguage === 'en') {
+      // English article: look for title and summary in response
+      const lines = text.split('\n').map(l => l.trim()).filter(l => l);
+      if (lines.length >= 2) {
+        // First line is translated title, rest is summary
+        return {
+          translatedTitle: lines[0],
+          summary: lines.slice(1).join('\n')
+        };
+      } else if (lines.length === 1) {
+        // Only summary returned, use original title as is
+        return {
+          translatedTitle: null,
+          summary: lines[0]
+        };
+      }
+      // Empty response
       return {
-        translatedTitle: lines[0],
-        summary: lines.slice(1).join('\n')
+        translatedTitle: null,
+        summary: null
       };
     }
 
-    // Single line or Japanese article - everything is summary
+    // Japanese article: everything is summary
     return {
       translatedTitle: null,
-      summary: text
+      summary: text || null
     };
   }
 

@@ -113,8 +113,8 @@ export class Article {
       lines.push(`   💬 ${this.aiSummary}`);
     }
 
-    // URL
-    lines.push(`   🔗 ${this.url}`);
+    // URL (wrapped in angle brackets to disable embeds)
+    lines.push(`   🔗 <${this.url}>`);
 
     return lines.join('\n');
   }
