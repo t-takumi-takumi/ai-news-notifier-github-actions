@@ -10,12 +10,9 @@
       "name": "Qiita",
       "emoji": "🟤",
       "feeds": [
-        "https://qiita.com/popular-items/feed.atom",
-        "https://qiita.com/tags/ai/feed.atom",
-        "https://qiita.com/tags/llm/feed.atom",
-        "https://qiita.com/tags/chatgpt/feed.atom"
+        "https://qiita.com/popular-items/feed.atom"
       ],
-      "maxArticles": 20
+      "maxArticles": 8
     },
     "zenn": {
       "name": "Zenn",

@@ -127,52 +127,58 @@ export class MessageFormatter {
   _splitIntoChunks(header, sections, footer) {
     const chunks = [];
     const maxLength = DISCORD_CONFIG.maxLength;
+    const headerPrefix = header + '\n\n';
+    const parts = [...sections.map(section => section + '\n\n'), footer];
 
-    // Start with header
-    let currentChunk = header + '\n\n';
+    let currentChunk = '';
 
-    for (const section of sections) {
-      // Check if adding section would exceed limit
-      const testChunk = currentChunk + section + '\n\n';
+    for (let i = 0; i < parts.length; i++) {
+      let remaining = parts[i];
 
-      if (testChunk.length > maxLength) {
-        // Current chunk is full, save it
-        if (currentChunk.length > header.length + 2) {
+      while (remaining.length > 0) {
+        const available = maxLength - currentChunk.length;
+
+        if (available <= 0) {
           chunks.push(currentChunk);
+          currentChunk = '';
+          continue;
         }
 
-        // Start new chunk with this section
-        currentChunk = header + '\n\n' + section + '\n\n';
-
-        // If section itself is too long, split it
-        while (currentChunk.length > maxLength) {
-          // Find a good split point (end of an article)
-          const splitPoint = this._findSplitPoint(currentChunk.slice(0, maxLength));
-          chunks.push(currentChunk.slice(0, splitPoint));
-          currentChunk = header + '\n\n' + currentChunk.slice(splitPoint).trim() + '\n\n';
+        if (remaining.length <= available) {
+          currentChunk += remaining;
+          remaining = '';
+          continue;
         }
-      } else {
-        currentChunk = testChunk;
+
+        // Current part doesn't fit in this chunk.
+        if (currentChunk.length > 0) {
+          chunks.push(currentChunk);
+          currentChunk = '';
+          continue;
+        }
+
+        // Single part is too large; split at a readable boundary.
+        const splitPoint = this._findSplitPoint(remaining.slice(0, maxLength));
+        chunks.push(remaining.slice(0, splitPoint));
+        remaining = remaining.slice(splitPoint).trimStart();
       }
     }
 
-    // Add footer to last chunk
-    const testWithFooter = currentChunk + footer;
+    if (currentChunk.length > 0) {
+      chunks.push(currentChunk);
+    }
 
-    if (testWithFooter.length > maxLength) {
-      // Footer doesn't fit, save current chunk and add footer as separate chunk
-      if (currentChunk.length > header.length + 2) {
-        chunks.push(currentChunk);
-      }
-      chunks.push(header + '\n\n' + footer);
+    if (chunks.length === 0) {
+      return [headerPrefix + footer];
+    }
+
+    if (headerPrefix.length + chunks[0].length <= maxLength) {
+      chunks[0] = headerPrefix + chunks[0];
     } else {
-      currentChunk = testWithFooter;
-      if (currentChunk.length > header.length + 2) {
-        chunks.push(currentChunk);
-      }
+      chunks.unshift(headerPrefix.trimEnd());
     }
 
-    return chunks.length > 0 ? chunks : [header + '\n\n' + footer];
+    return chunks;
   }
 
   /**

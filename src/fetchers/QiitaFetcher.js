@@ -9,14 +9,9 @@ export class QiitaFetcher extends BaseFetcher {
       name: 'Qiita',
       sourceKey: 'qiita',
       feeds: config.feeds || [
-        'https://qiita.com/popular-items/feed.atom',
-        'https://qiita.com/tags/ai/feed.atom',
-        'https://qiita.com/tags/llm/feed.atom',
-        'https://qiita.com/tags/chatgpt/feed.atom',
-        'https://qiita.com/tags/生成ai/feed.atom',
-        'https://qiita.com/tags/機械学習/feed.atom'
+        'https://qiita.com/popular-items/feed.atom'
       ],
-      maxArticles: config.maxArticles || 20
+      maxArticles: config.maxArticles || 8
     });
   }
 
