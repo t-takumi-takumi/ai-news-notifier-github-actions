@@ -20,7 +20,8 @@
       "feeds": [
         "https://zenn.dev/feed"
       ],
-      "maxArticles": 8
+      "maxArticles": 8,
+      "dateRangeHours": 168
     }
   },
   "maxArticlesPerSection": 8,

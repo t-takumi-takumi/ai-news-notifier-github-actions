@@ -17,6 +17,7 @@ export class BaseFetcher {
     this.sourceKey = config.sourceKey; // e.g., 'hackernews', 'qiita', 'zenn'
     this.feeds = Array.isArray(config.feeds) ? config.feeds : [config.feeds];
     this.maxArticles = config.maxArticles || 20;
+    this.dateRangeHours = Number.isFinite(config.dateRangeHours) ? config.dateRangeHours : 24;
     this.parser = getRSSParser();
     this.normalizer = getArticleNormalizer();
   }
@@ -56,8 +57,10 @@ export class BaseFetcher {
       // Sort by published date
       articles = this.normalizer.sortByPublishedDate(articles);
 
-      // Filter by date range (last 24 hours)
-      articles = this.normalizer.filterByDateRange(articles, 24);
+      // Filter by date range
+      if (this.dateRangeHours > 0) {
+        articles = this.normalizer.filterByDateRange(articles, this.dateRangeHours);
+      }
 
       // Limit to max articles
       articles = this.normalizer.limit(articles, this.maxArticles);
@@ -84,7 +87,8 @@ export class BaseFetcher {
       name: this.name,
       sourceKey: this.sourceKey,
       feeds: this.feeds,
-      maxArticles: this.maxArticles
+      maxArticles: this.maxArticles,
+      dateRangeHours: this.dateRangeHours
     };
   }
 }

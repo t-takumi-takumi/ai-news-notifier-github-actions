@@ -11,7 +11,9 @@ export class ZennFetcher extends BaseFetcher {
       feeds: config.feeds || [
         'https://zenn.dev/feed'
       ],
-      maxArticles: config.maxArticles || 8
+      maxArticles: config.maxArticles || 8,
+      // Trend feed may contain highly-ranked posts older than 24h.
+      dateRangeHours: Number.isFinite(config.dateRangeHours) ? config.dateRangeHours : 168
     });
   }
 
