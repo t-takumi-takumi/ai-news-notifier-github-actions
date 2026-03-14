@@ -1,9 +1,6 @@
 name: Daily AI News Notifier
 
 on:
-  schedule:
-    # Run daily at 06:30 JST (21:30 UTC)
-    - cron: '30 21 * * *'
   workflow_dispatch:  # Allow manual trigger
 
 jobs:
